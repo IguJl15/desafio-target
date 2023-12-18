@@ -1,9 +1,11 @@
-import 'package:desafio_target/src/shared/extensions/theme.dart';
 import 'package:flutter/material.dart';
+
+import '../../extensions/theme.dart';
 
 class CustomTextField extends StatelessWidget {
   final Widget label;
   final TextStyle? labelTextStyle;
+  final TextStyle? errorTextStyle;
   final TextEditingController controller;
   final TextInputType keyboardType;
   final bool obscureText;
@@ -20,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     required this.keyboardType,
     this.labelTextStyle,
+    this.errorTextStyle,
     this.obscureText = false,
     this.prefixIcon,
     this.suffixIcon,
@@ -60,6 +63,8 @@ class CustomTextField extends StatelessWidget {
             decoration: InputDecoration(
               prefixIcon: prefixIcon,
               suffixIcon: suffixIcon,
+            labelStyle: labelTextStyle,
+            errorStyle: errorTextStyle,
               filled: true,
               fillColor: backgroundColor ?? context.colorScheme.onInverseSurface,
               border: UnderlineInputBorder(borderSide: BorderSide.none, borderRadius: borderRadius),

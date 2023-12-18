@@ -58,11 +58,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final fieldLabelStyle = TextStyle(color: Colors.white);
+    final fieldErrorStyle = TextStyle(color: context.colorScheme.onErrorContainer);
     return Scaffold(
-      // backgroundColor: Colors.blueGrey[900],
       body: Container(
         decoration: const BoxDecoration(
-          gradient: null,
+          gradient: LinearGradient(
+            colors: primaryGradientColors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         padding: const EdgeInsets.all(16),
         child: Observer(builder: (context) {
@@ -73,6 +78,8 @@ class _LoginPageState extends State<LoginPage> {
               const Spacer(),
               CustomTextField(
                 label: const Text("Usuário"),
+                  labelTextStyle: fieldLabelStyle,
+                  errorTextStyle: fieldErrorStyle,
                 enabled: !loginStore.loading,
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
@@ -82,6 +89,8 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               CustomTextField(
                 label: const Text("Senha"),
+                  labelTextStyle: fieldLabelStyle,
+                  errorTextStyle: fieldErrorStyle,
                 enabled: !loginStore.loading,
                 obscureText: !loginStore.showPassword,
                 keyboardType: TextInputType.visiblePassword,
@@ -108,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                       await launchUrl(uri);
                     } else {}
                   },
-                  child: const Text("Política de Privacidade"))
+                    child: Text("Política de Privacidade", style: fieldLabelStyle))
             ],
           );
         }),
