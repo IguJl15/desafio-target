@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                FilledButton(
+                PrimaryButton(
                   onPressed: () {
                     if (formKey.currentState?.validate() == true) {
                       loginStore.login();
