@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
         builder: (BuildContext context, Widget? child) {
           return MaterialApp(
             restorationScopeId: 'app',
-            theme: ThemeData(colorScheme: lightColorScheme),
-            darkTheme: ThemeData(colorScheme: darkColorScheme),
+            theme: ThemeData(colorScheme: lightColorScheme, fontFamily: "Ubuntu"),
+            darkTheme: ThemeData(colorScheme: darkColorScheme, fontFamily: "Ubuntu"),
             themeMode: settingsController.themeMode,
             initialRoute: LoginPage.routeName,
             onGenerateRoute: (RouteSettings routeSettings) {
