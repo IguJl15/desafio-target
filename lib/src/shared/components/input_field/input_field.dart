@@ -17,6 +17,8 @@ class CustomTextField extends StatelessWidget {
   final bool enabled;
   final bool autocorrect;
 
+  final String? Function(String?)? validator;
+
   const CustomTextField({
     required this.label,
     required this.controller,
@@ -31,6 +33,7 @@ class CustomTextField extends StatelessWidget {
     this.labelColor,
     this.enabled = true,
     this.autocorrect = true,
+    this.validator,
     super.key,
   });
 
@@ -48,27 +51,21 @@ class CustomTextField extends StatelessWidget {
             child: label,
           ),
         ),
-        Card(
-          elevation: 2,
-          margin: null,
-          clipBehavior: Clip.antiAlias,
-          color: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: borderRadius),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            enabled: enabled,
-            autocorrect: autocorrect,
-            decoration: InputDecoration(
-              prefixIcon: prefixIcon,
-              suffixIcon: suffixIcon,
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          enabled: enabled,
+          autocorrect: autocorrect,
+          validator: validator,
+          decoration: InputDecoration(
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
             labelStyle: labelTextStyle,
             errorStyle: errorTextStyle,
-              filled: true,
-              fillColor: backgroundColor ?? context.colorScheme.onInverseSurface,
-              border: UnderlineInputBorder(borderSide: BorderSide.none, borderRadius: borderRadius),
-            ),
+            filled: true,
+            fillColor: backgroundColor ?? context.colorScheme.onInverseSurface,
+            border: UnderlineInputBorder(borderSide: BorderSide.none, borderRadius: borderRadius),
           ),
         ),
       ],

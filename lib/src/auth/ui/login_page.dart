@@ -1,12 +1,16 @@
-import 'package:desafio_target/src/auth/stores/login_store.dart';
-import 'package:desafio_target/src/shared/extensions/theme.dart';
-import 'package:desafio_target/src/home/ui/home_page.dart';
-import 'package:desafio_target/src/shared/components/input_field/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../home/ui/home_page.dart';
+import '../../shared/components/input_field/input_field.dart';
+import '../../shared/components/primary_button.dart/primary_button.dart';
+import '../../shared/components/progress_indicator/small_progress_indicator.dart';
+import '../../shared/extensions/theme.dart';
+import '../../shared/gradients/primary_gradient.dart';
+import '../stores/login_store.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = "login_page";
@@ -18,6 +22,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final formKey = GlobalKey<FormState>();
   late LoginStore loginStore;
 
   late TextEditingController _emailController;
@@ -34,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     _emailController.addListener(() => loginStore.setEmail(_emailController.text));
     _passwordController.addListener(() => loginStore.setPassword(_passwordController.text));
-  }                                                                                                                                                               
+  }
 
   @override
   void dispose() {
@@ -71,54 +76,63 @@ class _LoginPageState extends State<LoginPage> {
         ),
         padding: const EdgeInsets.all(16),
         child: Observer(builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Spacer(),
-              CustomTextField(
-                label: const Text("Usuário"),
+          return Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Spacer(),
+                CustomTextField(
+                  label: const Text("Usuário"),
                   labelTextStyle: fieldLabelStyle,
                   errorTextStyle: fieldErrorStyle,
-                enabled: !loginStore.loading,
-                keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                controller: _emailController,
-                prefixIcon: const Icon(Icons.person),
-              ),
-              const SizedBox(height: 20),
-              CustomTextField(
-                label: const Text("Senha"),
-                  labelTextStyle: fieldLabelStyle,
-                  errorTextStyle: fieldErrorStyle,
-                enabled: !loginStore.loading,
-                obscureText: !loginStore.showPassword,
-                keyboardType: TextInputType.visiblePassword,
-                autocorrect: false,
-                controller: _passwordController,
-                prefixIcon: const Icon(Icons.lock),
-                suffixIcon: IconButton(
-                  onPressed: loginStore.toggleShowPassword,
-                  icon: Icon(loginStore.showPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                  enabled: !loginStore.loading,
+                  keyboardType: TextInputType.emailAddress,
+                  autocorrect: false,
+                  controller: _emailController,
+                  prefixIcon: const Icon(Icons.person),
+                  validator: (_) => loginStore.emailError,
                 ),
-              ),
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: loginStore.login,
-                child: loginStore.loading
-                    ? CircularProgressIndicator(color: context.colorScheme.surface)
-                    : const Text('Login'),
-              ),
-              const Spacer(),
-              TextButton(
-                  onPressed: () async {
-                    final uri = Uri.parse("https://www.google.com");
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri);
-                    } else {}
+                const SizedBox(height: 20),
+                CustomTextField(
+                  label: const Text("Senha"),
+                  labelTextStyle: fieldLabelStyle,
+                  errorTextStyle: fieldErrorStyle,
+                  enabled: !loginStore.loading,
+                  obscureText: !loginStore.showPassword,
+                  keyboardType: TextInputType.visiblePassword,
+                  autocorrect: false,
+                  controller: _passwordController,
+                  validator: (_) => loginStore.passwordError,
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    onPressed: loginStore.toggleShowPassword,
+                    icon: Icon(loginStore.showPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () {
+                    if (formKey.currentState?.validate() == true) {
+                      loginStore.login();
+                    }
                   },
+                  child: loginStore.loading
+                      ? SmallProgressIndicator(color: context.colorScheme.surface)
+                      : const Text('Login'),
+                ),
+                const Spacer(),
+                TextButton(
+                    onPressed: () async {
+                      final uri = Uri.parse("https://www.google.com");
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri);
+                      } else {}
+                    },
                     child: Text("Política de Privacidade", style: fieldLabelStyle))
-            ],
+              ],
+            ),
           );
         }),
       ),

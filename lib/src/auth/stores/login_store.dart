@@ -1,4 +1,5 @@
 import 'package:mobx/mobx.dart';
+
 part 'login_store.g.dart';
 
 class LoginStore = _LoginStoreBase with _$LoginStore;
@@ -8,7 +9,7 @@ abstract class _LoginStoreBase with Store {
   bool loading = false;
 
   @action
-  void login() async {
+  Future<void> login() async {
     loading = true;
     print("Logging in");
 
@@ -22,26 +23,52 @@ abstract class _LoginStoreBase with Store {
   @observable
   String email = "";
 
-  @action
-  void setEmail(String value) => email = value;
-
   @observable
   String password = "";
-
-  @action
-  void setPassword(String value) => password = value;
 
   @observable
   bool showPassword = false;
 
-  @action
-  void toggleShowPassword() => showPassword = !showPassword;
+  @observable
+  bool isLoggedIn = false;
 
   @computed
   bool get isFormValid => email.length > 6 && password.length > 6;
 
-  @observable
-  bool isLoggedIn = false;
+  @computed
+  String? get emailError {
+    if (email.length < 2) {
+      return "O email deve conter pelo menos 2 caracteres";
+    } else if (email.length > 20) {
+      return "O email deve conter até 20 caracteres";
+    } else if (!email.isValidEmail()) {
+      return "O email está inválido. Verifique o formato";
+    } else {
+      return null;
+    }
+  }
+
+  @computed
+  String? get passwordError {
+    if (password.length < 2) {
+      return "A senha deve conter pelo menos 2 caracteres";
+    } else if (password.length > 20) {
+      return "A senha deve conter até 20 caracteres";
+    } else if (!password.isValidPassword()) {
+      return "A senha está inválido";
+    } else {
+      return null;
+    }
+  }
+
+  @action
+  void setEmail(String value) => email = value.trim();
+
+  @action
+  void setPassword(String value) => password = value;
+
+  @action
+  void toggleShowPassword() => showPassword = !showPassword;
 
   @action
   void logout() {
@@ -49,5 +76,18 @@ abstract class _LoginStoreBase with Store {
     loading = false;
     email = '';
     password = '';
+  }
+}
+
+// This extension could be on the shared folder, but as it specifies a "domain" rule, we are putting it here
+extension _Validation on String {
+  bool isValidEmail() {
+    final emailRegExp = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+(\.[a-zA-Z]{1,})+$");
+    return emailRegExp.hasMatch(this);
+  }
+
+  bool isValidPassword() {
+    final passwordRegExp = RegExp(r'^\w*$');
+    return passwordRegExp.hasMatch(this);
   }
 }

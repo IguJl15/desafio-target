@@ -16,6 +16,20 @@ mixin _$LoginStore on _LoginStoreBase, Store {
       (_$isFormValidComputed ??= Computed<bool>(() => super.isFormValid,
               name: '_LoginStoreBase.isFormValid'))
           .value;
+  Computed<String?>? _$emailErrorComputed;
+
+  @override
+  String? get emailError =>
+      (_$emailErrorComputed ??= Computed<String?>(() => super.emailError,
+              name: '_LoginStoreBase.emailError'))
+          .value;
+  Computed<String?>? _$passwordErrorComputed;
+
+  @override
+  String? get passwordError =>
+      (_$passwordErrorComputed ??= Computed<String?>(() => super.passwordError,
+              name: '_LoginStoreBase.passwordError'))
+          .value;
 
   late final _$loadingAtom =
       Atom(name: '_LoginStoreBase.loading', context: context);
@@ -97,19 +111,16 @@ mixin _$LoginStore on _LoginStoreBase, Store {
     });
   }
 
-  late final _$_LoginStoreBaseActionController =
-      ActionController(name: '_LoginStoreBase', context: context);
+  late final _$loginAsyncAction =
+      AsyncAction('_LoginStoreBase.login', context: context);
 
   @override
-  void login() {
-    final _$actionInfo = _$_LoginStoreBaseActionController.startAction(
-        name: '_LoginStoreBase.login');
-    try {
-      return super.login();
-    } finally {
-      _$_LoginStoreBaseActionController.endAction(_$actionInfo);
-    }
+  Future<void> login() {
+    return _$loginAsyncAction.run(() => super.login());
   }
+
+  late final _$_LoginStoreBaseActionController =
+      ActionController(name: '_LoginStoreBase', context: context);
 
   @override
   void setEmail(String value) {
@@ -163,7 +174,9 @@ email: ${email},
 password: ${password},
 showPassword: ${showPassword},
 isLoggedIn: ${isLoggedIn},
-isFormValid: ${isFormValid}
+isFormValid: ${isFormValid},
+emailError: ${emailError},
+passwordError: ${passwordError}
     ''';
   }
 }
