@@ -1,3 +1,4 @@
+import 'package:desafio_target/src/home/ui/components/info_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
@@ -22,9 +23,12 @@ class _HomePageState extends State<HomePage> {
   late HomePageStore homeStore;
 
   late ReactionDisposer reactionDisposer;
+  late ReactionDisposer editReactionDisposer;
 
   late TextEditingController _newTextController;
   late TextEditingController _editTextController;
+
+  final FocusNode inputFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -47,6 +51,19 @@ class _HomePageState extends State<HomePage> {
       (_) => homeStore.newTaskText.isEmpty,
       (bool isEmpty) => isEmpty ? _newTextController.clear() : null,
     );
+    editReactionDisposer = reaction(
+      (_) => homeStore.editTaskText.isEmpty,
+      (bool isEmpty) {
+        if (isEmpty) {
+          _editTextController.clear();
+        } else {
+          _editTextController.value = TextEditingValue(
+            text: homeStore.editTaskText,
+            selection: TextSelection.collapsed(offset: homeStore.editTaskText.length),
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -62,34 +79,21 @@ class _HomePageState extends State<HomePage> {
     return Provider.value(
       value: homeStore,
       child: Scaffold(
-        bottomNavigationBar: BottomAppBar(
-          color: context.colorScheme.tertiary,
-          height: null,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                child: CustomTextField(
-                  hintText: "Digite seu texto",
-                  textAlign: TextAlign.center,
-                  controller: homeStore.isEditing ? _editTextController : _newTextController,
-                  validator: (value) => value?.isEmpty == true ? "Texto muito curto" : null,
-                ),
+        bottomNavigationBar: Observer(
+          builder: (context) {
+            FocusScope.of(context).requestFocus(inputFocusNode);
+            return BottomAppBar(
+              color: context.colorScheme.tertiary,
+              height: null,
+              child: InfoInput(
+                isEditing: homeStore.isEditing,
+                controller: homeStore.isEditing ? _editTextController : _newTextController,
+                finishEditButtonPressed: homeStore.finishEditButtonPressed,
+                addItemButtonPressed: homeStore.addItemButtonPressed,
+                focusNode: inputFocusNode,
               ),
-              Container(
-                margin: const EdgeInsets.only(left: 8),
-                height: 48,
-                width: 48,
-                child: IconButton.filledTonal(
-                  onPressed: homeStore.isEditing ? homeStore.finishEditButtonPressed : homeStore.addItemButtonPressed,
-                  icon: homeStore.isEditing ? const Icon(Icons.task_alt) : const Icon(Icons.add_task),
-                  style: IconButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                ),
-              )
-            ],
-          ),
+            );
+          },
         ),
         body: Container(
           decoration: const BoxDecoration(gradient: primaryGradientTopToBottom),
