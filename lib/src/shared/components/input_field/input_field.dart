@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 import '../../extensions/theme.dart';
 
 class CustomTextField extends StatelessWidget {
-  final Widget label;
+  final Widget? label;
+  final String? hintText;
+
   final TextStyle? labelTextStyle;
+  final TextStyle? hintTextStyle;
   final TextStyle? errorTextStyle;
-  final TextEditingController controller;
-  final TextInputType keyboardType;
+  final TextAlign? textAlign;
+
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
   final bool obscureText;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -20,11 +25,14 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
 
   const CustomTextField({
-    required this.label,
-    required this.controller,
-    required this.keyboardType,
+    this.label,
+    this.hintText,
+    this.controller,
+    this.keyboardType,
+    this.hintTextStyle,
     this.labelTextStyle,
     this.errorTextStyle,
+    this.textAlign,
     this.obscureText = false,
     this.prefixIcon,
     this.suffixIcon,
@@ -44,13 +52,14 @@ class CustomTextField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DefaultTextStyle(
-          style: context.textTheme.labelLarge!.merge(labelTextStyle),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: label,
+        if (label != null)
+          DefaultTextStyle(
+            style: context.textTheme.labelLarge!.merge(labelTextStyle),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: label,
+            ),
           ),
-        ),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -58,10 +67,13 @@ class CustomTextField extends StatelessWidget {
           enabled: enabled,
           autocorrect: autocorrect,
           validator: validator,
+          textAlign: textAlign ?? TextAlign.start,
           decoration: InputDecoration(
+            hintText: hintText,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             labelStyle: labelTextStyle,
+            hintStyle: hintTextStyle,
             errorStyle: errorTextStyle,
             filled: true,
             fillColor: backgroundColor ?? context.colorScheme.onInverseSurface,
