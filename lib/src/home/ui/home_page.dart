@@ -95,6 +95,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         decoration: const BoxDecoration(gradient: primaryGradientTopToBottom),
+        height: double.infinity,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
