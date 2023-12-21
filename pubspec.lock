@@ -41,6 +41,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  auto_size_text:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: dev
+      resolved-ref: "570d809b1e9b5aa3c01f2ff6207de6e0f2af5af7"
+      url: "https://github.com/IguJl15/auto_size_text.git"
+    source: git
+    version: "3.0.0"
   boolean_selector:
     dependency: transitive
     description:
