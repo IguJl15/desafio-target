@@ -1,15 +1,17 @@
-import 'package:desafio_target/src/home/ui/components/info_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 
-import '../../shared/components/input_field/input_field.dart';
+import '../../auth/stores/login_store.dart';
+import '../../auth/ui/login_page.dart';
 import '../../shared/extensions/theme.dart';
 import '../../shared/gradients/primary_gradient.dart';
 import '../datasource/local_info_data_source.dart';
 import '../stores/home_page_store.dart';
+import 'components/info_input.dart';
 import 'components/info_tile.dart';
+import 'components/page_title.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = "/";
@@ -66,12 +68,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  void dispose() {
-    reactionDisposer();
-    _newTextController.dispose();
-    _editTextController.dispose();
-    super.dispose();
+  void logoutButtonPressed() {
+    final loginStore = context.read<LoginStore>();
+    loginStore.logout();
+
+    Navigator.pushNamedAndRemoveUntil(context, LoginPage.routeName, (route) => false);
   }
 
   @override
@@ -82,9 +83,9 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: Observer(
           builder: (context) {
             FocusScope.of(context).requestFocus(inputFocusNode);
+
             return BottomAppBar(
               color: context.colorScheme.tertiary,
-              height: null,
               child: InfoInput(
                 isEditing: homeStore.isEditing,
                 controller: homeStore.isEditing ? _editTextController : _newTextController,
@@ -102,12 +103,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 24),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child:
-                      Text("Suas informações", style: context.textTheme.titleLarge!.merge(onPrimaryGradientTextStyle)),
-                ),
+                PageTitle(logoutButtonPressed: logoutButtonPressed),
                 Observer(builder: (context) {
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 12).copyWith(bottom: 24),
@@ -121,15 +117,18 @@ class _HomePageState extends State<HomePage> {
                             ),
                           )
                         : Column(
-                            children: List.generate(homeStore.itens.length, (index) {
-                              final item = homeStore.itens[index];
-                              return InfoTile(
-                                info: item,
-                                enabled: !homeStore.isEditing || homeStore.currentEditing == index,
-                                onEditButtonPressed: () => homeStore.editButtonPressed(index),
-                                onRemoveButtonPressed: () => homeStore.removeItemButtonPressed(index),
-                              );
-                            }),
+                            children: List.generate(
+                              homeStore.itens.length,
+                              (index) {
+                                final item = homeStore.itens[index];
+                                return InfoTile(
+                                  info: item,
+                                  enabled: !homeStore.isEditing || homeStore.currentEditing == index,
+                                  onEditButtonPressed: () => homeStore.editButtonPressed(index),
+                                  onRemoveButtonPressed: () => homeStore.removeItemButtonPressed(index),
+                                );
+                              },
+                            ),
                           ),
                   );
                 }),
@@ -139,5 +138,13 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    reactionDisposer();
+    _newTextController.dispose();
+    _editTextController.dispose();
+    super.dispose();
   }
 }
