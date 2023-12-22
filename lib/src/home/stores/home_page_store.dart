@@ -1,5 +1,5 @@
-import 'package:desafio_target/src/home/datasource/datasource.dart';
-import 'package:desafio_target/src/home/models/info.dart';
+import '../datasource/datasource.dart';
+import '../models/info.dart';
 import 'package:mobx/mobx.dart';
 
 part 'home_page_store.g.dart';
@@ -32,8 +32,12 @@ abstract class _HomePageStore with Store {
     itens.addAll(storedItems);
   }
 
+  Function() get buttonPressed => isEditing ? finishEditButtonPressed : addItemButtonPressed;
+
   @action
   Future<void> addItemButtonPressed() async {
+    if (newTaskText.isEmpty) return;
+
     final item = Info(description: newTaskText);
     final newItemId = await _dataSource.addInfo(item);
 

@@ -1,7 +1,9 @@
-import 'package:desafio_target/src/shared/components/input_field/input_field.dart';
 import 'package:flutter/material.dart';
 
-class InfoInput extends StatelessWidget {
+import '../../../shared/components/input_field/input_field.dart';
+import '../../../shared/extensions/theme.dart';
+
+class InfoInput extends StatefulWidget {
   final bool isEditing;
   final TextEditingController controller;
 
@@ -20,32 +22,69 @@ class InfoInput extends StatelessWidget {
   });
 
   @override
+  State<InfoInput> createState() => _InfoInputState();
+}
+
+class _InfoInputState extends State<InfoInput> {
+  final _formKey = GlobalKey<FormState>();
+
+  void submit(BuildContext context) {
+    if (_formKey.currentState?.validate() == true) {
+      final onPress = widget.isEditing ? widget.finishEditButtonPressed : widget.addItemButtonPressed;
+
+      onPress();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    FocusScope.of(context).requestFocus(widget.focusNode);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Flexible(
-          child: CustomTextField(
-            hintText: "Digite seu texto",
-            textAlign: TextAlign.center,
-            controller: controller,
-            validator: (value) => value?.isEmpty == true ? "Texto muito curto" : null,
-            focusNode: focusNode,
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: CustomTextField(
+              hintText: "Digite seu texto",
+              textAlign: TextAlign.center,
+              controller: widget.controller,
+              errorTextStyle: TextStyle(color: context.colorScheme.errorContainer),
+              focusNode: widget.focusNode,
+              onFieldSubmitted: (_) => submit(context),
+              validator: (value) {
+                if (value == null) return null;
+
+                if (value.isNotEmpty && value.length < 4) {
+                  return "Texto muito curto";
+                }
+
+                return null;
+              },
+            ),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 8),
-          height: 48,
-          width: 48,
-          child: IconButton.filledTonal(
-            onPressed: isEditing ? finishEditButtonPressed : addItemButtonPressed,
-            icon: isEditing ? const Icon(Icons.task_alt) : const Icon(Icons.add_task),
-            style: IconButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-          ),
-        )
-      ],
+          Container(
+            margin: const EdgeInsets.only(left: 8),
+            height: 48,
+            width: 48,
+            child: IconButton.filledTonal(
+              onPressed: () => submit(context),
+              icon: widget.isEditing ? const Icon(Icons.task_alt) : const Icon(Icons.add_task),
+              tooltip: widget.isEditing ? "Editar" : "Criar",
+              style: IconButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

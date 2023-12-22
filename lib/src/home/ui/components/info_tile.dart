@@ -39,7 +39,7 @@ class _InfoTileState extends State<InfoTile> {
   @override
   Widget build(BuildContext context) {
     final titleStyle = context.textTheme.titleMedium;
-    return InfoTitleBuilder(
+    return _InfoTitleBuilder(
         info: widget.info,
         expanded: expanded,
         textStyle: titleStyle,
@@ -63,11 +63,13 @@ class _InfoTileState extends State<InfoTile> {
                 IconButton(
                   onPressed: widget.enabled ? widget.onEditButtonPressed : null,
                   icon: const Icon(Icons.edit),
+                  tooltip: "Editar",
                 ),
                 IconButton(
                   onPressed: widget.enabled ? widget.onRemoveButtonPressed : null,
                   icon: const Icon(Icons.close),
                   color: context.colorScheme.error,
+                  tooltip: "Apagar",
                 )
               ],
             ),
@@ -76,15 +78,14 @@ class _InfoTileState extends State<InfoTile> {
   }
 }
 
-class InfoTitleBuilder extends StatelessWidget {
+class _InfoTitleBuilder extends StatelessWidget {
   final Info info;
   final bool expanded;
   final TextStyle? textStyle;
   final Widget Function(BuildContext context, Widget titleWidget, bool overflow) builder;
 
-  const InfoTitleBuilder({
+  const _InfoTitleBuilder({
     required this.builder,
-    super.key,
     required this.info,
     required this.expanded,
     this.textStyle,
@@ -93,19 +94,23 @@ class InfoTitleBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTextHeightBehavior(
-      textHeightBehavior: TextHeightBehavior(),
+      textHeightBehavior: const TextHeightBehavior(),
       child: AutoSizeBuilder(
-        text: TextSpan(text: info.description),
+        text: TextSpan(children: [TextSpan(text: info.description)]),
         maxLines: 2,
         wrapWords: true,
         minFontSize: textStyle?.fontSize ?? 16,
         builder: (context, scale, overflow) {
-          final title = AutoSizeText(
-            info.description,
-            maxLines: expanded ? null : 2,
-            wrapWords: true,
-            minFontSize: textStyle?.fontSize ?? 16,
-            overflow: TextOverflow.fade,
+          final title = Tooltip(
+            message: info.description,
+            waitDuration: Durations.extralong4,
+            child: AutoSizeText(
+              info.description,
+              maxLines: expanded ? null : 2,
+              wrapWords: true,
+              minFontSize: textStyle?.fontSize ?? 16,
+              overflow: TextOverflow.fade,
+            ),
           );
 
           return builder(context, title, overflow);

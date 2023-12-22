@@ -55,7 +55,7 @@ abstract class _LoginStoreBase with Store {
     } else if (password.length > 20) {
       return "A senha deve conter até 20 caracteres";
     } else if (!password.isValidPassword()) {
-      return "A senha está inválido";
+      return "A senha está inválida";
     } else {
       return null;
     }

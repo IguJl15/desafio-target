@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   late TextEditingController _newTextController;
   late TextEditingController _editTextController;
 
-  final FocusNode inputFocusNode = FocusNode();
+  late final FocusNode inputFocusNode;
 
   @override
   void initState() {
@@ -43,6 +43,8 @@ class _HomePageState extends State<HomePage> {
       ..addListener(() => homeStore.setEditTaskText(_editTextController.text));
 
     homeStore.init();
+
+    inputFocusNode = FocusNode();
   }
 
   @override
@@ -82,10 +84,9 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         bottomNavigationBar: Observer(
           builder: (context) {
-            FocusScope.of(context).requestFocus(inputFocusNode);
-
             return BottomAppBar(
               color: context.colorScheme.tertiary,
+              height: 96,
               child: InfoInput(
                 isEditing: homeStore.isEditing,
                 controller: homeStore.isEditing ? _editTextController : _newTextController,

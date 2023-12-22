@@ -22,6 +22,7 @@ class CustomTextField extends StatelessWidget {
   final bool enabled;
   final bool autocorrect;
   final FocusNode? focusNode;
+  final void Function(String? value)? onFieldSubmitted;
 
   final String? Function(String?)? validator;
 
@@ -44,6 +45,7 @@ class CustomTextField extends StatelessWidget {
     this.autocorrect = true,
     this.validator,
     this.focusNode,
+    this.onFieldSubmitted,
     super.key,
   });
 
@@ -71,6 +73,7 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           focusNode: focusNode,
           textAlign: textAlign ?? TextAlign.start,
+          onFieldSubmitted: onFieldSubmitted,
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: prefixIcon,
