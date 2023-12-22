@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/components/text_link/text_link.dart';
@@ -36,6 +37,29 @@ class _InfoTileState extends State<InfoTile> {
     );
   }
 
+  void showDeleteConfirmationDialog(BuildContext context) async {
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirmar exclusão"),
+        content: const Text("Tem certeza que deseja excluir essa informação?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.onRemoveButtonPressed();
+              Navigator.pop(context, true);
+            },
+            child: Text("Excluir", style: TextStyle(color: context.colorScheme.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final titleStyle = context.textTheme.titleMedium;
@@ -66,7 +90,7 @@ class _InfoTileState extends State<InfoTile> {
                   tooltip: "Editar",
                 ),
                 IconButton(
-                  onPressed: widget.enabled ? widget.onRemoveButtonPressed : null,
+                  onPressed: widget.enabled ? () => showDeleteConfirmationDialog(context) : null,
                   icon: const Icon(Icons.close),
                   color: context.colorScheme.error,
                   tooltip: "Apagar",
