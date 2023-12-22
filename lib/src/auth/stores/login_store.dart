@@ -10,11 +10,11 @@ abstract class _LoginStoreBase with Store {
 
   @action
   Future<void> login() async {
-    loading = true;
-    print("Logging in");
+    if (_isFormInvalid) return;
 
-    await Future.delayed(const Duration(seconds: 2));
-    print("Logged!");
+    loading = true;
+
+    await Future.delayed(const Duration(seconds: 1));
 
     loading = false;
     isLoggedIn = true;
@@ -32,8 +32,7 @@ abstract class _LoginStoreBase with Store {
   @observable
   bool isLoggedIn = false;
 
-  @computed
-  bool get isFormValid => email.length > 6 && password.length > 6;
+  bool get _isFormInvalid => emailError != null || passwordError != null;
 
   @computed
   String? get emailError {
