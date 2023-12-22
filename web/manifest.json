@@ -1,6 +1,6 @@
 {
-    "name": "desafio_target",
-    "short_name": "desafio_target",
+    "name": "Desafio Target",
+    "short_name": "Desafio Target",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#caf5fc",
