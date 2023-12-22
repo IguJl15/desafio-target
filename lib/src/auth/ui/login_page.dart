@@ -1,3 +1,4 @@
+import 'package:desafio_target/src/shared/components/pages_utils/default_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
@@ -73,8 +74,7 @@ class _LoginPageState extends State<LoginPage> {
     final fieldErrorStyle = TextStyle(color: context.colorScheme.onErrorContainer);
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: primaryGradientTopToBottom),
+      body: DefaultPageGradient(
         padding: const EdgeInsets.all(16),
         child: Observer(
           builder: (context) {
@@ -84,6 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const Spacer(),
                   const Spacer(),
                   CustomTextField(
                     label: const Text("Usuário"),
@@ -95,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _emailController,
                     prefixIcon: const Icon(Icons.person),
                     validator: (_) => loginStore.emailError,
+                    textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
                   CustomTextField(
@@ -115,11 +117,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  PrimaryButton(
-                    onPressed: submit,
-                    child: loginStore.loading
-                        ? SmallProgressIndicator(color: context.colorScheme.surface)
-                        : const Text('Login'),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: MediaQuery.platformBrightnessOf(context) == Brightness.light ? Colors.white24 : null,
+                    ),
+                    padding: const EdgeInsets.all(2),
+                    child: PrimaryButton(
+                      onPressed: submit,
+                      child: loginStore.loading
+                          ? SmallProgressIndicator(color: context.colorScheme.surface)
+                          : const Text('Login'),
+                    ),
                   ),
                   const Spacer(),
                   TextButton(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../shared/components/input_field/input_field.dart';
@@ -28,6 +29,13 @@ class InfoInput extends StatefulWidget {
 class _InfoInputState extends State<InfoInput> {
   final _formKey = GlobalKey<FormState>();
 
+  bool get isPlatformDesktop =>
+      kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.macOS ||
+      defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.fuchsia;
+
   void submit(BuildContext context) {
     if (_formKey.currentState?.validate() == true) {
       final onPress = widget.isEditing ? widget.finishEditButtonPressed : widget.addItemButtonPressed;
@@ -40,7 +48,7 @@ class _InfoInputState extends State<InfoInput> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    FocusScope.of(context).requestFocus(widget.focusNode);
+    if (isPlatformDesktop) FocusScope.of(context).requestFocus(widget.focusNode);
   }
 
   @override
@@ -61,6 +69,7 @@ class _InfoInputState extends State<InfoInput> {
               errorTextStyle: TextStyle(color: context.colorScheme.errorContainer),
               focusNode: widget.focusNode,
               onFieldSubmitted: (_) => submit(context),
+              onEditingComplete: () {},
               validator: (value) {
                 if (value == null) return null;
 

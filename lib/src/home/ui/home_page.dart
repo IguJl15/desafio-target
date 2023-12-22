@@ -1,3 +1,5 @@
+import 'package:desafio_target/src/shared/components/pages_utils/default_gradient.dart';
+import 'package:desafio_target/src/shared/components/pages_utils/page_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
@@ -16,6 +18,8 @@ import 'components/page_title.dart';
 class HomePage extends StatefulWidget {
   static const routeName = "/";
   const HomePage({super.key});
+
+  static const double contentMaxWidth = 900;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -79,61 +83,84 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final viewInsets = MediaQuery.viewInsetsOf(context);
+
+    final babColor = switch (MediaQuery.platformBrightnessOf(context)) {
+      Brightness.light => context.colorScheme.tertiary,
+      Brightness.dark => Color.alphaBlend(context.colorScheme.surface.withOpacity(0.5), context.colorScheme.scrim),
+    };
+
     return Provider.value(
       value: homeStore,
-      child: Scaffold(
-        bottomNavigationBar: Observer(
-          builder: (context) {
-            return BottomAppBar(
-              color: context.colorScheme.tertiary,
-              height: 96,
-              child: InfoInput(
-                isEditing: homeStore.isEditing,
-                controller: homeStore.isEditing ? _editTextController : _newTextController,
-                finishEditButtonPressed: homeStore.finishEditButtonPressed,
-                addItemButtonPressed: homeStore.addItemButtonPressed,
-                focusNode: inputFocusNode,
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          bottomNavigationBar: BottomAppBar(
+            color: babColor,
+            height: 96 + viewInsets.bottom,
+            elevation: 0,
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 12.0 + viewInsets.bottom),
+            child: Observer(
+              builder: (context) {
+                return PagePadding(
+                  maxWidth: HomePage.contentMaxWidth,
+                  child: InfoInput(
+                    isEditing: homeStore.isEditing,
+                    controller: homeStore.isEditing ? _editTextController : _newTextController,
+                    finishEditButtonPressed: homeStore.finishEditButtonPressed,
+                    addItemButtonPressed: homeStore.addItemButtonPressed,
+                    focusNode: inputFocusNode,
+                  ),
+                );
+              },
+            ),
+          ),
+          body: DefaultPageGradient(
+            height: double.infinity,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  PagePadding(
+                    maxWidth: HomePage.contentMaxWidth,
+                    child: PageTitle(logoutButtonPressed: logoutButtonPressed),
+                  ),
+                  PagePadding(
+                    maxWidth: HomePage.contentMaxWidth,
+                    child: Observer(
+                      builder: (context) {
+                        return Card(
+                          elevation: 0.5,
+                          margin: const EdgeInsets.symmetric(horizontal: 12).copyWith(bottom: 24),
+                          child: homeStore.itens.isEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
+                                  child: Text(
+                                    "Comece a adicionar informações no campo abaixo!",
+                                    textAlign: TextAlign.center,
+                                    style: context.textTheme.bodyLarge,
+                                  ),
+                                )
+                              : Column(
+                                  children: List.generate(
+                                    homeStore.itens.length,
+                                    (index) {
+                                      final item = homeStore.itens[index];
+                                      return InfoTile(
+                                        info: item,
+                                        enabled: !homeStore.isEditing || homeStore.currentEditing == index,
+                                        onEditButtonPressed: () => homeStore.editButtonPressed(index),
+                                        onRemoveButtonPressed: () => homeStore.removeItemButtonPressed(index),
+                                      );
+                                    },
+                                  ),
+                                ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
-        body: Container(
-          decoration: const BoxDecoration(gradient: primaryGradientTopToBottom),
-          height: double.infinity,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                PageTitle(logoutButtonPressed: logoutButtonPressed),
-                Observer(builder: (context) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 12).copyWith(bottom: 24),
-                    child: homeStore.itens.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
-                            child: Text(
-                              "Comece a adicionar informações no campo abaixo!",
-                              textAlign: TextAlign.center,
-                              style: context.textTheme.bodyLarge,
-                            ),
-                          )
-                        : Column(
-                            children: List.generate(
-                              homeStore.itens.length,
-                              (index) {
-                                final item = homeStore.itens[index];
-                                return InfoTile(
-                                  info: item,
-                                  enabled: !homeStore.isEditing || homeStore.currentEditing == index,
-                                  onEditButtonPressed: () => homeStore.editButtonPressed(index),
-                                  onRemoveButtonPressed: () => homeStore.removeItemButtonPressed(index),
-                                );
-                              },
-                            ),
-                          ),
-                  );
-                }),
-              ],
             ),
           ),
         ),
@@ -143,6 +170,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    inputFocusNode.dispose();
     reactionDisposer();
     _newTextController.dispose();
     _editTextController.dispose();

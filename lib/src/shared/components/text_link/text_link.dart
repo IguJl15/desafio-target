@@ -1,7 +1,8 @@
-import 'package:desafio_target/src/shared/extensions/theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../extensions/theme.dart';
 
 class CustomTextButton extends StatelessWidget {
   final String text;

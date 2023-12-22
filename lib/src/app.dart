@@ -1,12 +1,12 @@
-import 'package:desafio_target/src/auth/stores/login_store.dart';
-import 'package:desafio_target/src/auth/ui/login_page.dart';
-import 'package:desafio_target/src/home/ui/home_page.dart';
-import 'package:desafio_target/src/shared/theme/color_schemes.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'auth/stores/login_store.dart';
+import 'auth/ui/login_page.dart';
+import 'home/ui/home_page.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
+import 'shared/theme/color_schemes.g.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(colorScheme: lightColorScheme, fontFamily: "Ubuntu"),
             darkTheme: ThemeData(colorScheme: darkColorScheme, fontFamily: "Ubuntu"),
             themeMode: settingsController.themeMode,
-            initialRoute: LoginPage.routeName,
+            initialRoute: HomePage.routeName,
             onGenerateRoute: (RouteSettings routeSettings) {
               return MaterialPageRoute<void>(
                 settings: routeSettings,

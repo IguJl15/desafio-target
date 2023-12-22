@@ -1,5 +1,5 @@
-import '../../../shared/extensions/theme.dart';
-import '../../../shared/gradients/primary_gradient.dart';
+import 'package:desafio_target/src/shared/extensions/theme.dart';
+import 'package:desafio_target/src/shared/gradients/primary_gradient.dart';
 import 'package:flutter/material.dart';
 
 class PageTitle extends StatelessWidget {

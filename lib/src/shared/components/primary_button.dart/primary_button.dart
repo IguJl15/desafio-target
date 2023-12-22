@@ -14,9 +14,7 @@ class PrimaryButton extends StatelessWidget {
 
   final defaultStyle = const ButtonStyle(
     visualDensity: VisualDensity.standard,
-    minimumSize: MaterialStatePropertyAll(
-      Size(150, 40),
-    ),
+    minimumSize: MaterialStatePropertyAll(Size(150, 40)),
   );
 
   @override
